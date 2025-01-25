@@ -1,0 +1,6 @@
+Concept,Value,Date,Category,Subcategory,Store
+salary,1000,2020-01-01,income,,True
+rent,-500,2020-01-01,housing,,True
+salary,1000,2020-02-01,income,,True
+rent,-500,2020-02-01,housing,,True
+Electricity,-50,2020-02-01,utilities,,False
