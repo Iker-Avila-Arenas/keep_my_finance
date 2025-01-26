@@ -1,6 +1,9 @@
 Concept,Value,Date,Category,Subcategory,Store
+Late Expenses,-100,2020-01-01,housing,,False
 salary,1000,2020-01-01,income,,True
 rent,-500,2020-01-01,housing,,True
-salary,1000,2020-02-01,income,,True
-rent,-500,2020-02-01,housing,,True
-Electricity,-50,2020-02-01,utilities,,False
+salary,1000,2020-02-02,income,,True
+rent,-500,2020-02-05,housing,,True
+Electricity,-50,2020-02-10,utilities,,False
+Gas,-50,2020-02-10,utilities,,False
+Extra Salary,500,2020-02-15,income,,True

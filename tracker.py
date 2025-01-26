@@ -68,6 +68,7 @@ class Tracker():
         Get the total expenses per category
         """
         category_expenses = self.df.groupby('Category')['Value'].sum()
+        category_expenses = category_expenses.reset_index()
         return category_expenses
 
     def get_monthly_transactions(self, month, year):
@@ -77,7 +78,7 @@ class Tracker():
         month = month.sort_values('Date')
         return month
 
-    def monthly_summary(self, month, year):
+    def monthly_summary(self, month, year, start=0):
         """
         Return a summary of the monthly expenses
         """
@@ -85,10 +86,11 @@ class Tracker():
         # calculate cumulative per day
         cumulative = monthly_expenses['Value'].cumsum()
         total = monthly_expenses['Value'].sum()
-        max_state = cumulative.max()
-        min_state = cumulative.min()
+        max_state = cumulative.max() if cumulative.max() > 0 else 0
+        min_state = cumulative.min() if cumulative.min() < 0 else 0
+        end = start + total
 
-        return total, max_state, min_state
+        return total, max_state+start, min_state+start, end
     
     def get_daily_transactions(self, date):
         # Ensure Date column is datetime before filtering
@@ -105,7 +107,7 @@ class Tracker():
         # calculate cumulative per day
         cumulative = daily_expenses['Value'].cumsum()
         total = daily_expenses['Value'].sum()
-        max_state = cumulative.max()
-        min_state = cumulative.min()
+        max_state = cumulative.max() if cumulative.max() > 0 else 0
+        min_state = cumulative.min() if cumulative.min() < 0 else 0
 
         return total, max_state, min_state
