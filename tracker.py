@@ -54,18 +54,58 @@ class Tracker():
         if store and concept not in self.concept_to_category:
             self.concept_to_category[concept] = category
 
-    def get_monthly_expenses(self, month, year):
+    def filter_by_dates(self, start_date, end_date):
         # Ensure Date column is datetime before filtering
         self.df['Date'] = pd.to_datetime(self.df['Date'])
-        return self.df[(self.df['Date'].dt.month == month) & (self.df['Date'].dt.year == year) & (self.df['Value'] < 0)]
+        filtered = self.df[(self.df['Date'] >= start_date) & (self.df['Date'] <= end_date)]
+        filtered_tracker = Tracker()
+        filtered_tracker.df = filtered
+        filtered_tracker.update_concept_to_category()
+        return filtered_tracker
+    
+    def get_category_expenses(self):
+        """
+        Get the total expenses per category
+        """
+        category_expenses = self.df.groupby('Category')['Value'].sum()
+        return category_expenses
+
+    def get_monthly_transactions(self, month, year):
+        # Ensure Date column is datetime before filtering
+        self.df['Date'] = pd.to_datetime(self.df['Date'])
+        month = self.df[(self.df['Date'].dt.month == month) & (self.df['Date'].dt.year == year)]
+        month = month.sort_values('Date')
+        return month
 
     def monthly_summary(self, month, year):
         """
         Return a summary of the monthly expenses
         """
-        monthly_expenses = self.get_monthly_expenses(month, year)
+        monthly_expenses = self.get_monthly_transactions(month, year)
+        # calculate cumulative per day
+        cumulative = monthly_expenses['Value'].cumsum()
         total = monthly_expenses['Value'].sum()
-        max_state = monthly_expenses['Value'].idxmax()
-        min_state = monthly_expenses['Value'].idxmin()
+        max_state = cumulative.max()
+        min_state = cumulative.min()
 
-        return {'total': total, 'max': monthly_expenses.loc[max_state], 'min': monthly_expenses.loc[min_state]}
+        return total, max_state, min_state
+    
+    def get_daily_transactions(self, date):
+        # Ensure Date column is datetime before filtering
+        self.df['Date'] = pd.to_datetime(self.df['Date'])
+        day = self.df[self.df['Date'] == date]
+        day = day.sort_values('Date')
+        return day
+    
+    def daily_summary(self, date):
+        """
+        Return a summary of the daily expenses
+        """
+        daily_expenses = self.get_daily_transactions(date)
+        # calculate cumulative per day
+        cumulative = daily_expenses['Value'].cumsum()
+        total = daily_expenses['Value'].sum()
+        max_state = cumulative.max()
+        min_state = cumulative.min()
+
+        return total, max_state, min_state
